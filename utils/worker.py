@@ -124,7 +124,7 @@ def update_configurations(connector, settings: dict):
         if not configuration["lastDownloaded"] == "":
             check_version = configuration["lastDownloaded"]
 
-        upd_conf = connector.check_conf_update(configuration["programName"], check_version)
+        upd_conf = connector.check_conf_update(configuration["programName"], check_version, settings["platform"] ["startVersion"])
         if upd_conf is None:
             log.info(' --  Обновление для текущей версии конфигурации не найдено.')
             log.info(' < Обновление конфигурации завершено.')
@@ -137,6 +137,8 @@ def update_configurations(connector, settings: dict):
 
         log.info(' -- Найдена новая версия "{}" конфигурации.'.format(upd_conf["configurationVersion"]))
         log.info(' -- Скачивание цепочки обновлений...')
+
+        os_name = os.name;
 
         for sequence in upd_conf["upgradeSequence"]:
             download_conf = connector.get_conf_download_data(sequence, upd_conf["programVersionUin"])

@@ -13,7 +13,9 @@ class ApiConnector:
     """Объект для работы с API сервиса обновлений 1С"""
 
     API_URL = "https://update-api.1c.ru/update-platform/programs"
-    BODY_TEMPLATE = '{{"programName":"{0}","versionNumber":"{1}","platformVersion":"{2}","updateType":"{3}"}}'
+    #API_URL = "https://update-api.1c.ru/programs"
+    BODY_TEMPLATE = '{{"programName":"{0}","versionNumber":"{1}","platformVersion":"{2}","programNewName":' + \
+                    '"{3}","redactionNumber":"{4}","updateType":"{5}"}}'
     PROXIES = ""
 
     def __init__(self, its_login, its_password, proxy_config=None):
@@ -57,7 +59,7 @@ class ApiConnector:
         return result
 
 
-    def check_conf_update(self, conf_name, conf_version):
+    def check_conf_update(self, conf_name, conf_version, platform_version):
         """Получение информации о доступных обновлениях конфигурации 1С.
         @param conf_name: название конфигурации.
         @param conf_version: проверяемая версия конфигурации.
@@ -76,7 +78,8 @@ class ApiConnector:
                  }
         """
         request_url = "{0}/update/info".format(self.API_URL)
-        request_body = self.BODY_TEMPLATE.format(conf_name, conf_version, '', 'NewProgramOrRedaction')
+        #request_body = self.BODY_TEMPLATE.format(conf_name, conf_version, '', 'NewProgramOrRedaction')
+        request_body = self.BODY_TEMPLATE.format(conf_name, conf_version, platform_version, '', '', "NewConfigurationAndOrPlatform")
 
         result = None
         try:
@@ -147,7 +150,10 @@ class ApiConnector:
         result = None
         if (not resp_dict is None) and (not resp_dict["configurationUpdateDataList"] is None):
             result = resp_dict["configurationUpdateDataList"][0]
-
+            # 'templatePath' - '1c\\Accounting\\3_0_113_17'
+            # 'updateFileName' - '1cv8.cfu'
+            #  'size' - (int)130100605
+            # после этого можно проверить наличие файла в директирии и его размер!!!
         return result
 
 
